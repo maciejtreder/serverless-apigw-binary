@@ -2,6 +2,7 @@
 # serverless-apigw-binary
 
 This Serverless plugin automates the process of adding binary files support in API Gateway.
+![AWS API gateway binary support](https://raw.githubusercontent.com/maciejtreder/serverless-apigw-binary/master/binarySupport.png)
 
 ### Installation
 
