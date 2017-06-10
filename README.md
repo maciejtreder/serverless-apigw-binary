@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/serverless-apigw-binary.svg)](https://badge.fury.io/js/serverless-apigw-binary)
 # serverless-apigw-binary
 
 This Serverless plugin automates the process of adding binary files support in API Gateway.
@@ -5,7 +6,7 @@ This Serverless plugin automates the process of adding binary files support in A
 ### Installation
 
 ```bash
-npm install --save serverless-apig-s3
+npm install --save-dev serverless-apigw-binary
 ```
 
 ### Configuration
@@ -25,8 +26,12 @@ custom:
 ### Usage
 
 ```bash
-serverless deploy    # Plugin runs withing serverless deploy hook
+serverless deploy    # Plugin runs within serverless deploy hook
 ```
+
+### Examples
+
+* [AWS Lambda + API Gateway - binary support example][https://github.com/maciejtreder/angular-universal-serverless] ; [ AWS Lambda + API Gateway - live demo][https://www.angular-universal-serverless.maciejtreder.com]
 
 
 Something missing? More documentation? All PRs welcome at https://github.com/maciejtreder/serverless-apigw-binary

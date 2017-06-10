@@ -12,7 +12,7 @@ class BinarySupport {
   beforeDeploy() {
     this.serverless.service.provider.compiledCloudFormationTemplate.Resources.ApiGatewayRestApi.Properties.Body = {
       "swagger": "2.0",
-      "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.binarySupport.types
+      "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.apigwBinary.types
     };
   }
 }
