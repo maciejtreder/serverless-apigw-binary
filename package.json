@@ -1,7 +1,7 @@
 {
   "name": "serverless-apigw-binary",
-  "version": "0.1.6",
-  "description": "Enables binary support in AWS Gateway service.",
+  "version": "0.1.8",
+  "description": "Enables binary support in AWS API Gateway service.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
