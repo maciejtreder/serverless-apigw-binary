@@ -1,0 +1,29 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,300);
+h1 {
+  color: orange;
+  text-align: center;
+}
+.page-wrap div {
+  background: url('../img/sandbox.gif') no-repeat center;
+  height: 350px;
+  position: relative;
+}
+h3 {
+  position: absolute;
+  right: 460px;
+  top: 14px;
+  color: deepskyblue;
+}
+
+* {
+  font-weight: 300;
+  font-family: 'Source Sans Pro', calibri, Arial, sans-serif;
+}
+a:hover {
+  text-decoration: none;
+  color: orangered;
+}
+a {
+  margin: 0 10px;
+  color: orange;
+}
