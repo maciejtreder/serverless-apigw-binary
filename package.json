@@ -1,6 +1,6 @@
 {
   "name": "serverless-apigw-binary",
-  "version": "1.0.2",
+  "version": "0.1.3",
   "description": "Enables binary support in AWS Gateway service.",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "aws",
     "lambda"
   ],
-  "author": "Maciej Treder",
+  "author": "Maciej Treder <contact@maciejtreder.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/maciejtreder/serverless-apigw-binary/issues"
