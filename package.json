@@ -28,6 +28,6 @@
   },
   "homepage": "https://github.com/maciejtreder/serverless-apigw-binary#readme",
   "engines": {
-    "node": ">=7.6"
+    "node": ">=4.0"
   }
 }
