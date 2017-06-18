@@ -4,7 +4,6 @@
   "description": "Enables binary support in AWS API Gateway service.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
