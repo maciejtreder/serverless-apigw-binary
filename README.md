@@ -1,4 +1,5 @@
 [![npm version](https://badge.fury.io/js/serverless-apigw-binary.svg)](https://badge.fury.io/js/serverless-apigw-binary)
+[![Build Status](https://travis-ci.org/maciejtreder/serverless-apigw-binary.svg?branch=master)](https://travis-ci.org/maciejtreder/serverless-apigw-binary)
 # serverless-apigw-binary
 
 This Serverless plugin automates the process of adding binary files support in API Gateway.
