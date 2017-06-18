@@ -1,0 +1,8 @@
+deploy:
+  provider: npm
+  email: contact@maciejsobala.com
+  api_key:
+    secure: T5dEhme08EsuOQt1mJsGYNWCVmMUTZYDnmYrdx4U4PN8DcQ4S05Rd50p5qhTOK1nzncL0kwT/E4xVB5WNt+Fy8Xf0OUDjyvClqp06gfbnk+e4n+386q2r1Tm+xy5f4nWFU/W7hnqwJvhDxC6i23yi/Tl4JbvlwkJNp95BPkKy2LyKngzp71bEGRBoWkUCEkQ2bCiUeyIuEHD9Qa/8aaQg3TTGqEyhXuz2o5j7l6r1anxukoor3UTcZOO6SAIxq24YIWG9SKFfCR/fQuOD93sWxuPArEANr6m663cHhlqBE7MEjcIVq/CQ2kX6hMGlDvokKuhAgppHx2Xgh6l/uN/fq7v5b9QGZTKPs/v46ffT06tdJete7th7dd+O7KJOvEMObh3od2/JUbMZuZVB0IgVgCkNFVT80fvg4g38KiqVjiRpjJprR1kqbexj/LZdUsqHFTsyH43ELhu8mBjexTVad2DsonUJkF3vlqzjZWifMaXE/fVTRd9P/mTL9w/B/dOl/JtVHXtKmITCLCxjNPs/AUltlqbdYtSVELokYWmEVr0vz+VdLLSQ8f0XM81nwlBfPRNNaW6kL6hqgHyNxsynKU3l+Jam2+sNTijvUTKGm5g0xaj/hj9L9YmCKZKPJ3hSUz5v4d5WRdvDL8nmYZOFrgWhtUlc4pvXbY5wHqysRo=
+  on:
+    tags: true
+    repo: maciejtreder/serverless-apigw-binary
