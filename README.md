@@ -20,9 +20,10 @@ plugins:
  - serverless-apigw-binary
 
 custom:
-  apigw-binary:    #list of mime-types
-    - 'image/jpeg'
-    - 'text/html'
+  apigw-binary:
+    types:           #list of mime-types
+      - 'image/jpeg'
+      - 'text/html'
 ```
 
 ### Usage
