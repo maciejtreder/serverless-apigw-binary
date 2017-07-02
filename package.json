@@ -1,6 +1,6 @@
 {
   "name": "serverless-apigw-binary",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Enables binary support in AWS API Gateway service.",
   "main": "index.js",
   "scripts": {
