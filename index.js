@@ -43,6 +43,7 @@ class BinarySupport {
           var api = data.items.filter(entry => entry.name == apiName)[0]
           if(api != undefined) {
             resolve(api.id);
+            resolve(api.id);
             clearInterval(interval);
           }
         })
@@ -55,7 +56,7 @@ class BinarySupport {
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
-          }),
+    }).then(apiId => {
           apiGWSdk.updateStage({
             restApiId: apiId,
             stageName: 'dev'
