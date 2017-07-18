@@ -35,8 +35,8 @@ class BinarySupport {
       });
     };
 
-    const updateStage = restApiId => {
-           apiGWSdk.updateStage({ restApiId }, (err, data) => {
+    const updateStage = (restApiId ,stageName) => {
+           apiGWSdk.updateStage({ restApiId, stageName }, (err, data) => {
         if (err) throw new Error(err.stack);
       });
     }; 
@@ -61,7 +61,13 @@ class BinarySupport {
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
-            updateStage(apiId);
+          });
+          apiGWSdk.getStage({
+            restApiId: apiId,
+            stageName: 'dev'
+          }, (err, data) => {
+            if (err) throw new Exception(err.stack);
+            updateStage(apiId, 'dev');
           });
     });
 
