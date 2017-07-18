@@ -35,6 +35,12 @@ class BinarySupport {
       });
     };
 
+    const updateStage = restApiId => {
+           apiGWSdk.updateStage({ restApiId }, (err, data) => {
+        if (err) throw new Error(err.stack);
+      });
+    }; 
+
     new Promise((resolve) => {
       var interval = setInterval(()=> {
         apiGWSdk.getRestApis(null, (err, data) => {
