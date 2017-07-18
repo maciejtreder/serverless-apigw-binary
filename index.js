@@ -35,12 +35,6 @@ class BinarySupport {
       });
     };
 
-    const updateStage = (restApiId ,stageName) => {
-           apiGWSdk.updateStage({ restApiId, stageName }, (err, data) => {
-        if (err) throw new Error(err.stack);
-      });
-    }; 
-
     new Promise((resolve) => {
       var interval = setInterval(()=> {
         apiGWSdk.getRestApis(null, (err, data) => {
@@ -62,15 +56,13 @@ class BinarySupport {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
           });
-          apiGWSdk.getStage({
+          apiGWSdk.updateStage({
             restApiId: apiId,
             stageName: 'dev'
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
-            updateStage(apiId, 'dev');
           });
     });
-
   }
 }
 
