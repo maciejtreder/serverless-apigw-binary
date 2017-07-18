@@ -41,12 +41,16 @@ class BinarySupport {
           if (err) throw new Error(err.stack);
 
           var api = data.items.filter(entry => entry.name == apiName)[0]
-          if(api != undefined) {
-            resolve(api.id);
-            resolve(api.id);
-            clearInterval(interval);
-          }
-        })
+          apiGWSdk.getStages({ api.id }, (err, data) => {
+            if (err) throw new Error(err.stack);
+            var stage = data.items.filter(
+              if(api != undefined) {
+                resolve(api.id);
+                resolve(api.id, stage.stageName);
+                clearInterval(interval);
+              }
+            })
+          })
       }, 1000);
     }).then(apiId => {
           apiGWSdk.putRestApi({
@@ -57,14 +61,14 @@ class BinarySupport {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
           });
-    }).then(apiId => {
+    }).then(apiId, stageStageName) => {
           apiGWSdk.updateStage({
             restApiId: apiId,
-            stageName: 'dev'
+            stageName: stageStageName
           }, (err, data) => {
             if (err) throw new Error(err.stack);
           });
-    });
+    };
   }
 }
 
