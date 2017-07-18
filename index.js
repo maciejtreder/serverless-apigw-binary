@@ -31,7 +31,7 @@ class BinarySupport {
 
     const deployMyAPI = restApiId => {
       apiGWSdk.createDeployment({ restApiId }, (err, data) => {
-        if (err) throw new Exception(err.stack);
+        if (err) throw new Error(err.stack);
       });
     };
 
