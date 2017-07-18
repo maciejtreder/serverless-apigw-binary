@@ -56,6 +56,7 @@ class BinarySupport {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
           });
+    }).then(apiId => {
           apiGWSdk.updateStage({
             restApiId: apiId,
             stageName: 'dev'
