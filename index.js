@@ -29,6 +29,12 @@ class BinarySupport {
       "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.apigwBinary.types
     });
 
+    const deployMyAPI = restApiId => {
+      apiGWsdk.createDeployment({ restApiId }, (err, data) => {
+        if (err) throw new Exception(err.stack);
+      });
+    };
+
     new Promise((resolve) => {
       var interval = setInterval(()=> {
         apiGWSdk.getRestApis(null, (err, data) => {
@@ -42,16 +48,16 @@ class BinarySupport {
         })
       }, 1000);
     }).then(apiId => {
-
           apiGWSdk.putRestApi({
             restApiId: apiId,
             mode: 'merge',
             body: swaggerInput
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
+            deployMyAPI(apiId);
           });
+    });
 
-        });
   }
 }
 
