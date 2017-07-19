@@ -48,12 +48,18 @@ class BinarySupport {
               // })
               .map(entry => entry.stageName)
               .shift();
+            console.log('stageName: ' + stageName);
             resolve(stageName);
           }
         });
       }).then(stageName => {
-        apiGWSdk.updateStage({restApiId, stageName}, (err, data) => {
-          if(err) throw new Error(err);
+        const req = {
+          restApiId,
+          stageName,
+        }
+        console.log('request: ' + req);
+        apiGWSdk.updateStage(req, (err, data) => {
+          if(err) throw new Error(err, err.stack);
           else console.log(data);
         })
       });
