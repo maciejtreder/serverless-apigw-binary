@@ -36,16 +36,16 @@ class BinarySupport {
             throw new Error(err);
           } else {
             console.log(data);
-            const stageName = data.items
-              .sort((e1, e2) => {
-                if(e1.createdDate > e2.createdDate) {
-                  return 1;
-                } else if(e1.createdDate === e2.createdDate) {
-                  return 0;
-                } else {
-                  return -1;
-                }
-              })
+            const stageName = data.item
+              // .sort((e1, e2) => {
+              //   if(e1.createdDate > e2.createdDate) {
+              //     return 1;
+              //   } else if(e1.createdDate === e2.createdDate) {
+              //     return 0;
+              //   } else {
+              //     return -1;
+              //   }
+              // })
               .map(entry => entry.stageName)
               .shift();
             resolve(stageName);
