@@ -31,9 +31,9 @@ class BinarySupport {
 
     const modifyStage = restApiId => {
       new Promise((resolve/* , reject */) => {
-        apiGWSdk.getStages({ restApiId }, (error, data) => {
-          if(error) {
-            throw new Error(error);
+        apiGWSdk.getStages({ restApiId }, (err, data) => {
+          if(err) {
+            throw new Error(err);
           } else {
             console.log(data);
             const stageName = data.items
@@ -63,10 +63,12 @@ class BinarySupport {
     }
 
     const deployMyAPI = restApiId => {
-      apiGWSdk.createDeployment({ restApiId }, (err, data) => {
-        if (err) throw new Error(err.stack);
-        else modifyStage(restApiId);
-      });
+      setTimeout(() => {
+        apiGWSdk.createDeployment({ restApiId }, (err, data) => {
+          if (err) throw new Error(err.stack);
+          else modifyStage(restApiId);
+        });
+      }, 2000);
     };
 
     new Promise((resolve) => {
@@ -80,10 +82,8 @@ class BinarySupport {
             clearInterval(interval);
           }
         })
-      }, 1000);
+      }, 5000);
     }).then(apiId => {
-          let done = false;
-
           apiGWSdk.putRestApi({
             restApiId: apiId,
             mode: 'merge',
