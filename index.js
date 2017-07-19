@@ -29,50 +29,50 @@ class BinarySupport {
       "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.apigwBinary.types
     });
 
-    const modifyStage = restApiId => {
-      new Promise((resolve/* , reject */) => {
-        apiGWSdk.getStages({ restApiId }, (err, data) => {
-          if(err) {
-            throw new Error(err);
-          } else {
-            console.log(data);
-            const stageName = data.item
-              // .sort((e1, e2) => {
-              //   if(e1.createdDate > e2.createdDate) {
-              //     return 1;
-              //   } else if(e1.createdDate === e2.createdDate) {
-              //     return 0;
-              //   } else {
-              //     return -1;
-              //   }
-              // })
-              .map(entry => entry.stageName)
-              .shift();
-            console.log('stageName: ' + stageName);
-            resolve(stageName);
-          }
-        });
-      }).then(stageName => {
-        const req = {
-          restApiId,
-          stageName,
-        }
-        console.log('request: ' + JSON.stringify(req));
-        apiGWSdk.updateStage(req, (err, data) => {
-          if(err) throw new Error(err, err.stack);
-          else console.log(data);
-        })
-      });
+//     const modifyStage = restApiId => {
+//       new Promise((resolve/* , reject */) => {
+//         apiGWSdk.getStages({ restApiId }, (err, data) => {
+//           if(err) {
+//             throw new Error(err);
+//           } else {
+//             console.log(data);
+//             const stageName = data.item
+//               // .sort((e1, e2) => {
+//               //   if(e1.createdDate > e2.createdDate) {
+//               //     return 1;
+//               //   } else if(e1.createdDate === e2.createdDate) {
+//               //     return 0;
+//               //   } else {
+//               //     return -1;
+//               //   }
+//               // })
+//               .map(entry => entry.stageName)
+//               .shift();
+//             console.log('stageName: ' + stageName);
+//             resolve(stageName);
+//           }
+//         });
+//       }).then(stageName => {
+//         const req = {
+//           restApiId,
+//           stageName,
+//         }
+//         console.log('request: ' + JSON.stringify(req));
+//         apiGWSdk.updateStage(req, (err, data) => {
+//           if(err) throw new Error(err, err.stack);
+//           else console.log(data);
+//         })
+//       });
 
-      // const stageName = getStageName(restApiId);
-      // updateStage(restApiId, stageName);
-    }
+//       // const stageName = getStageName(restApiId);
+//       // updateStage(restApiId, stageName);
+//     }
 
     const deployMyAPI = restApiId => {
       setTimeout(() => {
         apiGWSdk.createDeployment({ restApiId }, (err, data) => {
           if (err) throw new Error(err.stack);
-          else modifyStage(restApiId);
+          //else modifyStage(restApiId);
         });
       }, 2000);
     };
@@ -81,7 +81,6 @@ class BinarySupport {
       var interval = setInterval(()=> {
         apiGWSdk.getRestApis(null, (err, data) => {
           if (err) throw new Error(err.stack);
-
           var api = data.items.filter(entry => entry.name == apiName)[0]
           if(api != undefined) {
             resolve(api.id);
@@ -99,7 +98,6 @@ class BinarySupport {
             deployMyAPI(apiId);
           });
     });
-
   }
 }
 
