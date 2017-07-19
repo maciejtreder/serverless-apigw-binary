@@ -57,7 +57,7 @@ class BinarySupport {
           restApiId,
           stageName,
         }
-        console.log('request: ' + req);
+        console.log('request: ' + JSON.stringify(req));
         apiGWSdk.updateStage(req, (err, data) => {
           if(err) throw new Error(err, err.stack);
           else console.log(data);
