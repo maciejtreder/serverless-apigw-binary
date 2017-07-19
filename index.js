@@ -29,9 +29,43 @@ class BinarySupport {
       "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.apigwBinary.types
     });
 
+    const modifyStage = restApiId => {
+      new Promise((resolve/* , reject */) => {
+        apiGWSdk.getStages({ restApiId }, (error, data) => {
+          if(error) {
+            throw new Error(error);
+          } else {
+            console.log(data);
+            const stageName = data.items
+              .sort((e1, e2) => {
+                if(e1.createdDate > e2.createdDate) {
+                  return 1;
+                } else if(e1.createdDate === e2.createdDate) {
+                  return 0;
+                } else {
+                  return -1;
+                }
+              })
+              .map(entry => entry.stageName)
+              .shift();
+            resolve(stageName);
+          }
+        });
+      }).then(stageName => {
+        apiGWSdk.updateStage({restApiId, stageName}, (err, data) => {
+          if(err) throw new Error(err);
+          else console.log(data);
+        })
+      });
+
+      // const stageName = getStageName(restApiId);
+      // updateStage(restApiId, stageName);
+    }
+
     const deployMyAPI = restApiId => {
       apiGWSdk.createDeployment({ restApiId }, (err, data) => {
         if (err) throw new Error(err.stack);
+        else modifyStage(restApiId);
       });
     };
 
@@ -41,18 +75,15 @@ class BinarySupport {
           if (err) throw new Error(err.stack);
 
           var api = data.items.filter(entry => entry.name == apiName)[0]
-          apiGWSdk.getStages({ api.id }, (err, data) => {
-            if (err) throw new Error(err.stack);
-            var stage = data.items.filter(
-              if(api != undefined) {
-                resolve(api.id);
-                resolve(api.id, stage.stageName);
-                clearInterval(interval);
-              }
-            })
-          })
+          if(api != undefined) {
+            resolve(api.id);
+            clearInterval(interval);
+          }
+        })
       }, 1000);
     }).then(apiId => {
+          let done = false;
+
           apiGWSdk.putRestApi({
             restApiId: apiId,
             mode: 'merge',
@@ -61,14 +92,8 @@ class BinarySupport {
             if (err) throw new Exception(err.stack);
             deployMyAPI(apiId);
           });
-    }).then(apiId, stageStageName) => {
-          apiGWSdk.updateStage({
-            restApiId: apiId,
-            stageName: stageStageName
-          }, (err, data) => {
-            if (err) throw new Error(err.stack);
-          });
-    };
+    });
+
   }
 }
 
