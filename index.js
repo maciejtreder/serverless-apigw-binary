@@ -1,6 +1,6 @@
 'use strict';
 
-const util = require('util')
+const util = require('util');
 
 class BinarySupport {
   constructor(serverless, options) {
@@ -29,65 +29,75 @@ class BinarySupport {
       "x-amazon-apigateway-binary-media-types": this.serverless.service.custom.apigwBinary.types
     });
 
-//     const modifyStage = restApiId => {
-//       new Promise((resolve/* , reject */) => {
-//         apiGWSdk.getStages({ restApiId }, (err, data) => {
-//           if(err) {
-//             throw new Error(err);
-//           } else {
-//             console.log(data);
-//             const stageName = data.item
-//               // .sort((e1, e2) => {
-//               //   if(e1.createdDate > e2.createdDate) {
-//               //     return 1;
-//               //   } else if(e1.createdDate === e2.createdDate) {
-//               //     return 0;
-//               //   } else {
-//               //     return -1;
-//               //   }
-//               // })
-//               .map(entry => entry.stageName)
-//               .shift();
-//             console.log('stageName: ' + stageName);
-//             resolve(stageName);
-//           }
-//         });
-//       }).then(stageName => {
-//         const req = {
-//           restApiId,
-//           stageName,
-//         }
-//         console.log('request: ' + JSON.stringify(req));
-//         apiGWSdk.updateStage(req, (err, data) => {
-//           if(err) throw new Error(err, err.stack);
-//           else console.log(data);
-//         })
-//       });
+    // should use async.waterfall to solve this kind of callback hell
+    const updateStage = { restApiId, deploymentId, stageName } => {
+      const req = {
+        restApiId,
+        stageName,
+        patchOperations: [{
+          op: "replace",
+          path: "/deploymentId",
+          value: deploymentId,
+        }],
+      }
+      console.log('request: ' + JSON.stringify(req));
+      apiGWSdk.updateStage(req, (err, data) => {
+        if(err) throw new Error(err, err.stack);
+        else console.log(data);
+      });
+    };
 
-//       // const stageName = getStageName(restApiId);
-//       // updateStage(restApiId, stageName);
-//     }
+    const retrieveLatestDeploymentId = { restApiId, stageName } => {
+      apiGWSdk.getDeployments({ restApiId }, (err, data) => {
+        if(err) {
+          throw new Error(err, err.stack);
+        } else {
+          const deploymentId = data.items.sort((e1, e2) => {
+            if(e1.createdDate > e2.createdDate) {
+              return 1;
+            } else if(e1.createdDate === e2.createdDate) {
+              return 0;
+            } else {
+              return -1;
+            }
+          }).shift().id;
+          console.log('deploymentId: ' + deploymentId);
+          setTimeout(updateStage({ restApiId, deploymentId, stageName }), 1000);
+        }
+      });
+    };
 
-    const deployMyAPI = restApiId => {
-      setTimeout(() => {
-        apiGWSdk.createDeployment({ restApiId }, (err, data) => {
-          if (err) throw new Error(err.stack);
-          //else modifyStage(restApiId);
-        });
-      }, 2000);
+    const retrieveStageName = restApiId => {
+      apiGWSdk.getStages({ restApiId }, (err, data) => {
+        if(err) {
+          throw new Error(err, err.stack);
+        } else {
+          const stageName = data.item.map(en => en.stageName).shift();
+          console.log('stageName: ' + stageName);
+          setTimeout(retrieveLatestDeploymentId(), 1000);
+        }
+      });
+    };
+
+    const deploy = restApiId => {
+      apiGWSdk.createDeployment({ restApiId }, (err, data) => {
+        if (err) throw new Error(err.stack);
+        else retrieveStageName(restApiId);
+      });
     };
 
     new Promise((resolve) => {
       var interval = setInterval(()=> {
         apiGWSdk.getRestApis(null, (err, data) => {
           if (err) throw new Error(err.stack);
+
           var api = data.items.filter(entry => entry.name == apiName)[0]
           if(api != undefined) {
             resolve(api.id);
             clearInterval(interval);
           }
         })
-      }, 5000);
+      }, 2000);
     }).then(apiId => {
           apiGWSdk.putRestApi({
             restApiId: apiId,
@@ -95,9 +105,10 @@ class BinarySupport {
             body: swaggerInput
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
-            deployMyAPI(apiId);
+            setTimeout(deploy(apiId), 1000);
           });
     });
+
   }
 }
 
