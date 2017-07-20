@@ -66,7 +66,7 @@ class BinarySupport {
             updateStage({ restApiId, deploymentId, stageName });
           }
         });
-      }, 5000);
+      }, 7000);
     };
 
     const retrieveStageName = restApiId => {
