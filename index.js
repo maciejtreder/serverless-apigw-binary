@@ -105,7 +105,7 @@ class BinarySupport {
             body: swaggerInput
           }, (err, data) => {
             if (err) throw new Exception(err.stack);
-            setTimeout(deploy(apiId), 1000);
+            deploy(apiId);
           });
     });
 
