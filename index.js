@@ -77,7 +77,7 @@ class BinarySupport {
           } else {
             const stageName = data.item.map(en => en.stageName).shift();
             console.log('stageName: ' + stageName);
-            retrieveLatestDeploymentId(restApiId, stageName);
+            retrieveLatestDeploymentId({ restApiId, stageName });
           }
         });
       }, 5000);
