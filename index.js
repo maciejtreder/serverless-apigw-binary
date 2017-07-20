@@ -32,12 +32,12 @@ class BinarySupport {
     // should use async.waterfall to solve this kind of callback hell
     const updateStage = { restApiId, deploymentId, stageName } => {
       const req = {
-        restApiId,
-        stageName,
+        restApiId: restApiId,
+        stageName: stageName,
         patchOperations: [{
           op: "replace",
           path: "/deploymentId",
-          value: deploymentId,
+          value: deploymentId
         }],
       }
       console.log('request: ' + JSON.stringify(req));
