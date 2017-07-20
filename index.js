@@ -31,20 +31,22 @@ class BinarySupport {
 
     // should use async.waterfall to solve this kind of callback hell
     const updateStage = ({ restApiId, deploymentId, stageName }) => {
-      const req = {
-        restApiId: restApiId,
-        stageName: stageName,
-        patchOperations: [{
-          op: "replace",
-          path: "/deploymentId",
-          value: deploymentId
-        }],
-      }
-      console.log('request: ' + JSON.stringify(req));
-      apiGWSdk.updateStage(req, (err, data) => {
-        if(err) throw new Error(err, err.stack);
-        else console.log(data);
-      });
+      setTimeout(() => {
+        const req = {
+          restApiId: restApiId,
+          stageName: stageName,
+          patchOperations: [{
+            op: "replace",
+            path: "/deploymentId",
+            value: deploymentId
+          }],
+        }
+        console.log('request: ' + JSON.stringify(req));
+        apiGWSdk.updateStage(req, (err, data) => {
+          if(err) throw new Error(err, err.stack);
+          else console.log(data);
+        });
+      }, 2000);
     };
 
     const retrieveLatestDeploymentId = ({ restApiId, stageName }) => {
@@ -66,7 +68,7 @@ class BinarySupport {
             updateStage({ restApiId, deploymentId, stageName });
           }
         });
-      }, 7000);
+      }, 2000);
     };
 
     const retrieveStageName = restApiId => {
@@ -80,14 +82,16 @@ class BinarySupport {
             retrieveLatestDeploymentId({ restApiId, stageName });
           }
         });
-      }, 5000);
+      }, 2000);
     };
 
     const deploy = restApiId => {
-      apiGWSdk.createDeployment({ restApiId }, (err, data) => {
-        if (err) throw new Error(err.stack);
-        else retrieveStageName(restApiId);
-      });
+      setTimeout(() => {
+        apiGWSdk.createDeployment({ restApiId }, (err, data) => {
+          if (err) throw new Error(err.stack);
+          else retrieveStageName(restApiId);
+        });
+      }, 2000);
     };
 
     new Promise((resolve) => {
