@@ -30,7 +30,7 @@ class BinarySupport {
     });
 
     // should use async.waterfall to solve this kind of callback hell
-    const updateStage = { restApiId, deploymentId, stageName } => {
+    const updateStage = ({ restApiId, deploymentId, stageName }) => {
       const req = {
         restApiId: restApiId,
         stageName: stageName,
@@ -47,7 +47,7 @@ class BinarySupport {
       });
     };
 
-    const retrieveLatestDeploymentId = { restApiId, stageName } => {
+    const retrieveLatestDeploymentId = ({ restApiId, stageName }) => {
       apiGWSdk.getDeployments({ restApiId }, (err, data) => {
         if(err) {
           throw new Error(err, err.stack);
