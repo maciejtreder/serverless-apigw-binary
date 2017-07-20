@@ -48,35 +48,39 @@ class BinarySupport {
     };
 
     const retrieveLatestDeploymentId = ({ restApiId, stageName }) => {
-      apiGWSdk.getDeployments({ restApiId }, (err, data) => {
-        if(err) {
-          throw new Error(err, err.stack);
-        } else {
-          const deploymentId = data.items.sort((e1, e2) => {
-            if(e1.createdDate > e2.createdDate) {
-              return 1;
-            } else if(e1.createdDate === e2.createdDate) {
-              return 0;
-            } else {
-              return -1;
-            }
-          }).shift().id;
-          console.log('deploymentId: ' + deploymentId);
-          setTimeout(updateStage({ restApiId, deploymentId, stageName }), 1000);
-        }
-      });
+      setTimeout(() => {
+        apiGWSdk.getDeployments({ restApiId }, (err, data) => {
+          if(err) {
+            throw new Error(err, err.stack);
+          } else {
+            const deploymentId = data.items.sort((e1, e2) => {
+              if(e1.createdDate > e2.createdDate) {
+                return 1;
+              } else if(e1.createdDate === e2.createdDate) {
+                return 0;
+              } else {
+                return -1;
+              }
+            }).shift().id;
+            console.log('deploymentId: ' + deploymentId);
+            updateStage({ restApiId, deploymentId, stageName });
+          }
+        });
+      }, 1000);
     };
 
     const retrieveStageName = restApiId => {
-      apiGWSdk.getStages({ restApiId }, (err, data) => {
-        if(err) {
-          throw new Error(err, err.stack);
-        } else {
-          const stageName = data.item.map(en => en.stageName).shift();
-          console.log('stageName: ' + stageName);
-          setTimeout(retrieveLatestDeploymentId(), 1000);
-        }
-      });
+      setTimeout(() => {
+        apiGWSdk.getStages({ restApiId }, (err, data) => {
+          if(err) {
+            throw new Error(err, err.stack);
+          } else {
+            const stageName = data.item.map(en => en.stageName).shift();
+            console.log('stageName: ' + stageName);
+            retrieveLatestDeploymentId();
+          }
+        });
+      }, 1000);
     };
 
     const deploy = restApiId => {
@@ -99,6 +103,7 @@ class BinarySupport {
         })
       }, 2000);
     }).then(apiId => {
+      setTimeout(() => {
           apiGWSdk.putRestApi({
             restApiId: apiId,
             mode: 'merge',
@@ -107,6 +112,7 @@ class BinarySupport {
             if (err) throw new Exception(err.stack);
             deploy(apiId);
           });
+      }, 2000);
     });
 
   }
