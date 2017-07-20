@@ -63,7 +63,7 @@ class BinarySupport {
               } else {
                 return -1;
               }
-            }).shift().id;
+            }).pop().id;
             console.log('deploymentId: ' + deploymentId);
             updateStage({ restApiId, deploymentId, stageName });
           }
