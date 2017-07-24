@@ -77,7 +77,15 @@ class BinarySupport {
           if(err) {
             throw new Error(err, err.stack);
           } else {
-            const stageName = data.item.map(en => en.stageName).shift();
+            const stageName = data.item.sort((e1, e2) => {
+                if(e1.lastUpdatedDate > e2.lastUpdatedDate) {
+                  return 1;
+                } else if(e1.lastUpdatedDate === e2.lastUpdatedDate) {
+                  return 0;
+                } else {
+                  return -1;
+                }
+              }).map(en => en.stageName).pop();
             console.log('stageName: ' + stageName);
             retrieveLatestDeploymentId({ restApiId, stageName });
           }
