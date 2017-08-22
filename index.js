@@ -10,12 +10,25 @@ class BinarySupport {
       'after:deploy:deploy': this.afterDeploy.bind(this)
     };
   }
-
+  getApiGatewayName(){
+    if(this.serverless.service.resources && this.serverless.service.resources.Resources){
+      const Resources =  this.serverless.service.resources.Resources;
+        for(let key in Resources){
+          if(Resources.hasOwnProperty(key)){
+              if(Resources[key].Type==='AWS::ApiGateway::RestApi'
+                  && Resources[key].Properties.Name){
+                  return  Resources[key].Properties.Name;
+              }
+          }
+        }
+    }
+    return this.serverless.getProvider(this.serverless.service.provider.name).naming.getApiGatewayName();
+  }
   afterDeploy() {
 
     const provider = this.serverless.getProvider(this.serverless.service.provider.name);
 
-    const apiName = this.serverless.getProvider(this.serverless.service.provider.name).naming.getApiGatewayName();
+    const apiName = this.getApiGatewayName();
     const sdk = provider.sdk;
     sdk.config.update({region: this.serverless.service.provider.region});
 
