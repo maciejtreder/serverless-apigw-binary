@@ -4,7 +4,9 @@
   "description": "Example of binary support plugin",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run server",
+    "server": "nodemon local.js",
+    "deploy": "serverless deploy"
   },
   "repository": {
     "type": "git",
@@ -30,31 +32,15 @@
   "engines": {
     "node": ">=4.0"
   },
-  "scripts": {
-    "start": "npm run server",
-    "server": "nodemon local.js",
-    "deploy": "serverless deploy"
-  },
   "dependencies": {
-    "express": "^4.15.2",
-    "rxjs": "^5.3.0",
-    "xhr2": "^0.1.4",
-    "zone.js": "^0.8.8",
     "aws-serverless-express": "^3.0.0",
-    "body-parser": "^1.17.1",
-    "compression": "^1.6.2",
-    "cors": "^2.8.3",
-    "serverless": "^1.10.0"
+    "express": "^4.15.2"
   },
   "devDependencies": {
     "@types/express": "^4.0.35",
     "@types/node": "^7.0.8",
     "nodemon": "^1.11.0",
-    "raw-loader": "^0.5.1",
-    "rimraf": "^2.6.1",
-    "script-ext-html-webpack-plugin": "^1.7.1",
     "serverless": "^1.10.0",
-    "serverless-apigw-binary": "^0.1.9",
-    "typescript": "^2.2.1"
+    "serverless-apigw-binary": "^0.3.6"
   }
 }

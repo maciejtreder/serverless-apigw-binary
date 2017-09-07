@@ -1,4 +1,4 @@
-let app = require('./app.js');
+let app = require('./dist/app');
 let port = process.env.PORT || 8000;
 
 // Server
