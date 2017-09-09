@@ -2,8 +2,9 @@
   "name": "serverless-apigw-binary",
   "version": "0.3.5",
   "description": "Enables binary support in AWS API Gateway service.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "test": "istanbul cover mocha test/tests.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,13 @@
   "homepage": "https://github.com/maciejtreder/serverless-apigw-binary#readme",
   "engines": {
     "node": ">=4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
+    "serverless": "^1.21.1",
+    "sinon": "^3.2.1"
   }
 }
