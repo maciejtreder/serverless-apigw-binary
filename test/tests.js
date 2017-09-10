@@ -15,6 +15,7 @@ describe('', () => {
     let sandbox;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
         options = {
             stage: 'production',
             region: 'eu-central-1'
@@ -23,10 +24,9 @@ describe('', () => {
         mimeTypes = ['text/html', 'image/jpeg'];
         serverless.setProvider('aws', new AwsProvider(serverless, options));
         serverless.service.custom = {apigwBinary: {types: mimeTypes }};
-        serverless.service.provider = {name: 'aws'}
+        serverless.service.provider = {name: 'aws', stage: 'production'}
         serverless.service.service = 'test';
-
-        sandbox = sinon.sandbox.create();
+        serverless.cli =  {log: (msg) => {}};
     });
 
     afterEach(() => {
@@ -69,7 +69,8 @@ describe('', () => {
         let apiGW;
         let getRestApisStub;
         let putRestApiStub;
-        let afterDeploySpy;
+        let createDeploymentStub;
+
         beforeEach(() => {
             apiGW = new ApiGWPlugin(serverless, options);
             apiGW.interval = 1;
@@ -82,6 +83,9 @@ describe('', () => {
             });
             putRestApiStub = sandbox.stub(apiGW.apiGWSdk, 'putRestApi').callsFake((params, callback) => {
                 callback(null, "some data");
+            });
+            createDeploymentStub = sandbox.stub(apiGW.apiGWSdk, 'createDeployment').callsFake((params, callback) => {
+                callback(null, "congratz!")
             });
         });
 
@@ -112,6 +116,25 @@ describe('', () => {
                 });
             });
         });
+
+        it('Should call aws-sdk.createDeployment when hook is invoked', () => {
+            return apiGW.hooks['after:deploy:deploy']().then(() => {
+                expect(createDeploymentStub.calledOnce).to.be.equal(true);
+                expect(createDeploymentStub.getCall(0).args[1]).to.be.a('function')
+                expect(createDeploymentStub.getCall(0).args[0]).to.deep.equal({restApiId: 321, stageName: 'production'});
+            });
+        });
+
+        it('Should retry createDeployment after first fail', () => {
+            createDeploymentStub.callsFake((params, callback) => {
+                callback({code: 'TooManyRequestsException', retryDelay: 0.147293665179372})
+            });
+            return apiGW.hooks['after:deploy:deploy']().then(() => {
+                expect(createDeploymentStub.calledTwice).to.be.equal(true);
+                expect(createDeploymentStub.getCall(1).args[1]).to.be.a('function')
+                expect(createDeploymentStub.getCall(1).args[0]).to.deep.equal({restApiId: 321, stageName: 'production'});
+            });
+        })
 
         it('Should rethrow AWS SDK errors in getRestApis', () => {
             getRestApisStub.callsFake((params, callback) => {
