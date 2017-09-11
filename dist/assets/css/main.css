@@ -10,7 +10,7 @@ h1 {
 }
 h3 {
   position: absolute;
-  right: 460px;
+  right: 260px;
   top: 14px;
   color: deepskyblue;
 }
@@ -37,7 +37,7 @@ html, body {
   min-height: 100%;
   /* equal to footer height */
   margin-bottom: -35px !important;
-  max-width: 1000px;
+  max-width: 600px;
   margin: 0 auto;
 }
 .page-wrap:after {

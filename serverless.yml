@@ -1,7 +1,4 @@
-service: binary-express-maciej-treder
-
-plugins:
-  - serverless-apigw-binary
+service: my-awesome-app
 
 provider:
   name: aws
@@ -10,11 +7,6 @@ provider:
   timeout: 10
   stage: production
   region: eu-central-1
-
-custom:
-  apigwBinary:
-    types:
-      - '*/*'
 
 functions:
   api:
