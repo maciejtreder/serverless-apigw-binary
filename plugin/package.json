@@ -1,0 +1,19 @@
+{
+  "name": "serverless-apigw-binary",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maciejtreder/serverless-apigw-binary.git"
+  },
+  "author": "Maciej Treder <contact@maciejtreder.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maciejtreder/serverless-apigw-binary/issues"
+  },
+  "homepage": "https://github.com/maciejtreder/serverless-apigw-binary#readme"
+}

@@ -1,5 +1,8 @@
 service: my-awesome-app
 
+plugins:
+  - serverless-apigw-binary
+
 provider:
   name: aws
   runtime: nodejs6.10
@@ -7,6 +10,11 @@ provider:
   timeout: 10
   stage: production
   region: eu-central-1
+
+custom:
+  apigwBinary:
+    types:
+      - '*/*'
 
 functions:
   api:
