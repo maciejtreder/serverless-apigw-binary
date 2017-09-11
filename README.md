@@ -34,8 +34,8 @@ serverless deploy    # Plugin runs within serverless deploy hook
 
 ### Examples
 
-* [Angular Universal + AWS Lambda + API Gateway - binary support example](https://github.com/maciejtreder/angular-universal-serverless) ; [ AWS Lambda + API Gateway - live demo](https://www.angular-universal-serverless.maciejtreder.com)
-* [Node.js + AWS Lambda + API Gateway - binary support example](https://github.com/maciejtreder/serverless-apigw-binary/tree/master/examples/express)
+* [Angular Universal + AWS Lambda + API Gateway - binary support example](https://github.com/maciejtreder/angular-universal-serverless) : [ AWS Lambda + API Gateway - live demo](https://www.angular-universal-serverless.maciejtreder.com)
+* [Node.js + AWS Lambda + API Gateway - binary support example](https://github.com/maciejtreder/serverless-apigw-binary/tree/master/examples/express) : [Node.js + AWS Lambda + API Gateway - binary support live demo](https://serverless-apigw.maciejtreder.com)
 
 
 Something missing? More documentation? All PRs welcome at https://github.com/maciejtreder/serverless-apigw-binary

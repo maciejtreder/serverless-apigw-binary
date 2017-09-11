@@ -11,18 +11,10 @@ provider:
   stage: production
   region: eu-central-1
 
-package:
-  exclude:
-   - node_modules/**
-   - '!node_modules/aws-serverless-express/**'
-   - '!node_modules/binary-case/**'
-
 custom:
   apigwBinary:
     types:
-      - 'text/html'
-      - 'text/css'
-      - 'image/gif'
+      - '*/*'
 
 functions:
   api:
