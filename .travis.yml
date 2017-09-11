@@ -1,13 +1,12 @@
 language: node_js
 node_js: node
 script:
-  - if [ "$TRAVIS_BRANCH" != "master" ]; then npm test; fi
+- if [ "$TRAVIS_BRANCH" != "master" ]; then npm test; fi
 deploy:
   provider: npm
   email: contact@maciejtreder.com
   api_key:
-    secure: T5dEhme08EsuOQt1mJsGYNWCVmMUTZYDnmYrdx4U4PN8DcQ4S05Rd50p5qhTOK1nzncL0kwT/E4xVB5WNt+Fy8Xf0OUDjyvClqp06gfbnk+e4n+386q2r1Tm+xy5f4nWFU/W7hnqwJvhDxC6i23yi/Tl4JbvlwkJNp95BPkKy2LyKngzp71bEGRBoWkUCEkQ2bCiUeyIuEHD9Qa/8aaQg3TTGqEyhXuz2o5j7l6r1anxukoor3UTcZOO6SAIxq24YIWG9SKFfCR/fQuOD93sWxuPArEANr6m663cHhlqBE7MEjcIVq/CQ2kX6hMGlDvokKuhAgppHx2Xgh6l/uN/fq7v5b9QGZTKPs/v46ffT06tdJete7th7dd+O7KJOvEMObh3od2/JUbMZuZVB0IgVgCkNFVT80fvg4g38KiqVjiRpjJprR1kqbexj/LZdUsqHFTsyH43ELhu8mBjexTVad2DsonUJkF3vlqzjZWifMaXE/fVTRd9P/mTL9w/B/dOl/JtVHXtKmITCLCxjNPs/AUltlqbdYtSVELokYWmEVr0vz+VdLLSQ8f0XM81nwlBfPRNNaW6kL6hqgHyNxsynKU3l+Jam2+sNTijvUTKGm5g0xaj/hj9L9YmCKZKPJ3hSUz5v4d5WRdvDL8nmYZOFrgWhtUlc4pvXbY5wHqysRo=
+    secure: YDnX7OcESI0tqeRh0WRJNJz58zDvnI7vGStgQXTgOjMb+XTG82lS53pIWo6xVEOPG8neGLI3D28nbRvK5/qPOw4DcP360BcLc/eAZWF6aFQGexeMo+R0U0AdHCNTdobFnCh8dx4YAa+FAKAKHL+Rb9xdKkLq+TgJ18w5eD93XcegFwC+PmeXqr0E3GPQgx7Ms1ugW/BXzxqQ6rnb2dynjecWX1gcowVHlhLJNT499sSlxrcFp5DgJeLnfpIt3j1esEMfA4jhGIAgQ8lGOZpqvlLKKbd5nizDH1r9kWIs+UY85WDlvaq7sgCTVCAWCVRgHZ/M0LInBcd1qlNYQHwMSAPodXP4cZM3kAuuiu8wVMj9PQHkJNhkhzapSeV9CYOF3T1cqyVF3FIg7J9eYRecafAfTw0Abgf2JvF+Pm4AmGP4heK17Mkxl4CB4yftME5QgdB/fOEiYg8iPJmfynLhmyOpKoRIl3e0+GjfEfB7BfP+lxRipTCfNipODBCFrrZjdZ+XZJtrWbdlbAwoTIZBvUxZBOnKCvGnqHbQyGy9Yc0tAvu2qKg8mgLhrGXqVl8unoIsSWUmPv6pwt8OH/ZlGaMfcNB878k6ZLHCoHnNXMOew0jD9xgK3/r1+f8ipzFtFMriDNkTGnWuZtv85S+lpKtr3hfptgzlcxQaG9057gc=
   on:
     tags: true
-    branch: master
     repo: maciejtreder/serverless-apigw-binary
