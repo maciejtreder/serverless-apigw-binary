@@ -19,13 +19,14 @@ describe('', () => {
         options = {
             stage: 'production',
             region: 'eu-central-1'
-        }
+        };
         serverless = new Serverless(options);
         mimeTypes = ['text/html', 'image/jpeg'];
         serverless.setProvider('aws', new AwsProvider(serverless, options));
         serverless.service.custom = {apigwBinary: {types: mimeTypes }};
         serverless.service.provider = {name: 'aws', stage: 'production'}
         serverless.service.service = 'test';
+        serverless.processedInput= {options: {}};
         serverless.cli =  {log: (msg) => {}};
     });
 
@@ -149,6 +150,21 @@ describe('', () => {
             });
             return apiGW.hooks['after:deploy:deploy']().should.be.rejectedWith(Error, "can't update api error");
         });
-
     });
+    describe('profiles', () => {
+        let apiGW;
+        beforeEach(() => {
+            apiGW = new ApiGWPlugin(serverless, options);
+        });
+
+        it('should load default profile when none is specified', () => {
+            expect(apiGW.provider.sdk.config.credentials.profile).to.be.equal('default');
+        });
+
+        it('should use specified profile', () => {
+            serverless.processedInput.options = {stage: 'production', profile: 'some-profile', region: 'some-region'}
+            apiGW = new ApiGWPlugin(serverless, options);
+            expect(apiGW.provider.sdk.config.credentials.profile).to.be.equal('some-profile');
+        });
+    })
 });
