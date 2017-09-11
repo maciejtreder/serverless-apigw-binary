@@ -13,6 +13,8 @@ class BinarySupport {
     this.profile = this.serverless.processedInput.options.profile || this.serverless.processedInput.options['aws-profile'] || this.serverless.service.provider.profile;
     this.region = this.serverless.processedInput.options.region || this.serverless.service.provider.region;
 
+
+
     const sdk = this.provider.sdk;
     const credentials = new sdk.SharedIniFileCredentials({profile: this.profile});
     sdk.config.update({region: this.region, credentials: credentials});
@@ -47,7 +49,7 @@ class BinarySupport {
 
   createDeployment(apiId) {
     return new Promise((resolve) => {
-      this.apiGWSdk.createDeployment({restApiId: apiId, stageName: this.serverless.service.provider.stage}, (error, data) => {
+      this.apiGWSdk.createDeployment({restApiId: apiId, stageName: this.stage}, (error, data) => {
         if (error && error.code == 'TooManyRequestsException') {
           resolve(Math.round(parseFloat(error.retryDelay)) + 1)
         } else {
@@ -77,8 +79,23 @@ class BinarySupport {
     });
   }
 
+  getApiGatewayName(){
+    if(this.serverless.service.resources && this.serverless.service.resources.Resources){
+      const Resources =  this.serverless.service.resources.Resources;
+      for(let key in Resources){
+        if(Resources.hasOwnProperty(key)){
+          if(Resources[key].Type==='AWS::ApiGateway::RestApi'
+              && Resources[key].Properties.Name){
+            return  Resources[key].Properties.Name;
+          }
+        }
+      }
+    }
+    return this.provider.naming.getApiGatewayName();
+  }
+
   afterDeploy() {
-    const apiName = this.provider.naming.getApiGatewayName();
+    const apiName = this.getApiGatewayName();
 
     const swaggerInput = JSON.stringify({
       "swagger": "2.0",
