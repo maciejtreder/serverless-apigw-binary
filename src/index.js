@@ -1,34 +1,29 @@
-'use strict';
-
-const util = require('util')
-
 class BinarySupport {
   constructor(serverless, options) {
-    this.interval = 1000;
+    this.intervalMultiplexer = 1000;
+    this.options = options || {};
     this.serverless = serverless;
-    this.options = options? options : {};
     this.mimeTypes = this.serverless.service.custom.apigwBinary.types;
     this.provider = this.serverless.getProvider(this.serverless.service.provider.name);
-    this.stage = this.serverless.processedInput.options.stage || this.serverless.service.provider.stage;
-    this.profile = this.serverless.processedInput.options.profile || this.serverless.processedInput.options['aws-profile'] || this.serverless.service.provider.profile;
-    this.region = this.serverless.processedInput.options.region || this.serverless.service.provider.region;
-
-
+    this.stage = this.options.stage || this.serverless.service.provider.stage;
+    this.profile = this.options.profile || this.serverless.processedInput.options['aws-profile'] || this.serverless.service.provider.profile;
+    this.region = this.options.region || this.serverless.service.provider.region;
 
     const sdk = this.provider.sdk;
     const credentials = new sdk.SharedIniFileCredentials({profile: this.profile});
     sdk.config.update({region: this.region, credentials: credentials});
     this.apiGWSdk = new sdk.APIGateway();
 
+    this.cloudFormation = new sdk.CloudFormation();
+
     this.hooks = {
       'after:deploy:deploy': this.afterDeploy.bind(this)
     };
   }
 
-
   delay(t) {
     return new Promise(resolve => {
-      setTimeout(resolve, t * 1000);
+      setTimeout(resolve, t * this.intervalMultiplexer);
     });
   }
 
@@ -38,9 +33,9 @@ class BinarySupport {
         restApiId: apiId,
         mode: 'merge',
         body: swagger
-      }, (err, data) => {
-        if (err)
-          throw new Error(err.stack);
+      }, (error, data) => {
+        if (error)
+          throw new Error(error.stack);
         this.serverless.cli.log("Uploaded swagger with mime types");
         resolve();
       })
@@ -60,21 +55,17 @@ class BinarySupport {
     });
   }
 
-  getApiId(apiName, tryCount, delay) {
-    return new Promise((resolve) => {
-      if (tryCount <= 0) {
-        throw new Error("Exceed try counts");
-      }
-      this.apiGWSdk.getRestApis(null, (err, data) => {
-        if(err) {
-          throw new Error(err.stack);
+  getApiId() {
+    return new Promise(resolve => {
+      this.cloudFormation.describeStacks({StackName: this.provider.naming.getStackName(this.stage)}, (error, data) => {
+        if (error) {
+          throw new Error(error.stack);
         }
-        var api = data.items.filter(entry => entry.name == apiName)[0]
-        if(api != undefined) {
-          resolve(api.id);
-        } else {
-          return this.delay(delay).then(() => this.getApiId(apiName, tryCount-1, delay))
-        }
+        const output = data.Stacks[0].Outputs;
+        let apiUrl;
+        output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
+        const apiId = apiUrl.match('https:\/\/(.*)\\.execute-api')[1];
+        resolve(apiId);
       });
     });
   }
@@ -95,17 +86,15 @@ class BinarySupport {
   }
 
   afterDeploy() {
-    const apiName = this.getApiGatewayName();
-
     const swaggerInput = JSON.stringify({
       "swagger": "2.0",
       "info": {
-        "title": apiName
+        "title": this.getApiGatewayName()
       },
       "x-amazon-apigateway-binary-media-types": this.mimeTypes
     });
 
-    return this.getApiId(apiName, 3, 3).then(apiId => {
+    return this.getApiId().then(apiId => {
       return this.putSwagger(apiId, swaggerInput).then(() => {
         return this.createDeployment(apiId).then((delay) => {
           if(delay) {
