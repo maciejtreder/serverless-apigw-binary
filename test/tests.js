@@ -67,20 +67,42 @@ describe('', () => {
     });
 
     describe("hook", () => {
+        let mockApiId = '29wg93ppgb'
         let apiGW;
-        let getRestApisStub;
+        let cloudFormationStub;
         let putRestApiStub;
         let createDeploymentStub;
 
         beforeEach(() => {
             apiGW = new ApiGWPlugin(serverless, options);
-            apiGW.interval = 1;
-            getRestApisStub = sandbox.stub(apiGW.apiGWSdk, 'getRestApis');
-            getRestApisStub.callsFake((params, callback) => {
-                callback(null, {items: [
-                    {id: 123, name: 'dont-match-me', createDate: '2017-07-02T17:52:59.000Z'},
-                    {id: 321, name: 'production-test', createDate: '2017-07-02T17:52:59.000Z'}
-                ]});
+            apiGW.intervalMultiplexer = 1;
+            cloudFormationStub = sandbox.stub(apiGW.cloudFormation, 'describeStacks');
+            cloudFormationStub.callsFake((params, callback) => {
+                callback(null, {
+                    ResponseMetadata: { RequestId: 'ecadfd49-985f-11e7-b4d3-fffe16f525da' },
+                    Stacks:
+                        [ { StackId: 'arn:aws:cloudformation:eu-central-1:548199570266:stack/my-awesome-app-production/bd1c19e0-985f-11e7-9408-50fafb4f9cae',
+                            StackName: 'my-awesome-app-production',
+                            Description: 'The AWS CloudFormation template for this Serverless application',
+                            Parameters: [],
+                            CreationTime: '2017-09-13T08:44:22.021Z',
+                            LastUpdatedTime: '2017-09-13T08:44:57.500Z',
+                            RollbackConfiguration: {},
+                            StackStatus: 'UPDATE_COMPLETE',
+                            DisableRollback: false,
+                            NotificationARNs: [],
+                            Capabilities: [Array],
+                            Outputs: [ { OutputKey: 'ApiLambdaFunctionQualifiedArn',
+                                OutputValue: 'arn:aws:lambda:eu-central-1:548199570266:function:my-awesome-app-production-api:23',
+                                Description: 'Current Lambda function version' },
+                                { OutputKey: 'ServiceEndpoint',
+                                    OutputValue: 'https://'+mockApiId+'.execute-api.eu-central-1.amazonaws.com/production',
+                                    Description: 'URL of the service endpoint' },
+                                { OutputKey: 'ServerlessDeploymentBucketName',
+                                    OutputValue: 'my-awesome-app-productio-serverlessdeploymentbuck-1ahqqn47ovfvx' } ],
+                            Tags: [Array] }
+                        ]
+                })
             });
             putRestApiStub = sandbox.stub(apiGW.apiGWSdk, 'putRestApi').callsFake((params, callback) => {
                 callback(null, "some data");
@@ -95,10 +117,16 @@ describe('', () => {
             expect(apiGW.hooks['after:deploy:deploy']).to.be.a('function');
         });
 
-        it('Should call aws-sdk.getRestApis when hook is invoked', () => {
+        it('Should call aws-sdk.cloudFormation when hook is invoked', () => {
             return apiGW.hooks['after:deploy:deploy']().then(()  => {
-                expect(getRestApisStub.calledOnce).to.be.equal(true);
-                expect(getRestApisStub.getCall(0).args[1]).to.be.a('function');
+                expect(cloudFormationStub.calledOnce).to.be.equal(true);
+                expect(cloudFormationStub.getCall(0).args[1]).to.be.a('function');
+            });
+        });
+
+        it('Should retrieve apiId', () => {
+            return apiGW.getApiId().then((apiId) => {
+                expect(apiId).to.be.equal(mockApiId)
             });
         });
 
@@ -107,7 +135,7 @@ describe('', () => {
                 expect(putRestApiStub.calledOnce).to.be.equal(true);
                 expect(putRestApiStub.getCall(0).args[0]).to.be.a('object');
                 expect(putRestApiStub.getCall(0).args[0]).to.be.deep.equal({
-                    restApiId: 321,
+                    restApiId: mockApiId,
                     mode: 'merge',
                     body: JSON.stringify({
                         "swagger": "2.0",
@@ -122,7 +150,7 @@ describe('', () => {
             return apiGW.hooks['after:deploy:deploy']().then(() => {
                 expect(createDeploymentStub.calledOnce).to.be.equal(true);
                 expect(createDeploymentStub.getCall(0).args[1]).to.be.a('function')
-                expect(createDeploymentStub.getCall(0).args[0]).to.deep.equal({restApiId: 321, stageName: 'production'});
+                expect(createDeploymentStub.getCall(0).args[0]).to.deep.equal({restApiId: mockApiId, stageName: 'production'});
             });
         });
 
@@ -133,15 +161,15 @@ describe('', () => {
             return apiGW.hooks['after:deploy:deploy']().then(() => {
                 expect(createDeploymentStub.calledTwice).to.be.equal(true);
                 expect(createDeploymentStub.getCall(1).args[1]).to.be.a('function')
-                expect(createDeploymentStub.getCall(1).args[0]).to.deep.equal({restApiId: 321, stageName: 'production'});
+                expect(createDeploymentStub.getCall(1).args[0]).to.deep.equal({restApiId: mockApiId, stageName: 'production'});
             });
         })
 
-        it('Should rethrow AWS SDK errors in getRestApis', () => {
-            getRestApisStub.callsFake((params, callback) => {
-                callback(new Error("can't get apis error"), null);
+        it('Should rethrow AWS SDK errors in cloudFormation', () => {
+            cloudFormationStub.callsFake((params, callback) => {
+                callback(new Error("can't get stacks error"), null);
             });
-            return apiGW.hooks['after:deploy:deploy']().should.be.rejectedWith(Error, "can't get apis error");
+            return apiGW.hooks['after:deploy:deploy']().should.be.rejectedWith(Error, "can't get stacks error");
         });
 
         it('Should rethrow AWS SDK errors in putRestApi', () => {
@@ -162,7 +190,7 @@ describe('', () => {
         });
 
         it('should use specified profile', () => {
-            serverless.processedInput.options = {stage: 'production', profile: 'some-profile', region: 'some-region'}
+            options = {stage: 'production', profile: 'some-profile', region: 'some-region'}
             apiGW = new ApiGWPlugin(serverless, options);
             expect(apiGW.provider.sdk.config.credentials.profile).to.be.equal('some-profile');
         });
