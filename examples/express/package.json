@@ -34,11 +34,11 @@
   },
   "dependencies": {
     "aws-serverless-express": "^3.0.0",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "serverless-apigw-binary": "^0.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0",
-    "serverless": "^1.21.1",
-    "serverless-apigw-binary": "^0.3.9"
+    "serverless": "^1.21.1"
   }
 }
