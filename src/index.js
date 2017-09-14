@@ -5,24 +5,15 @@ class BinarySupport {
     this.mimeTypes = this.serverless.service.custom.apigwBinary.types;
     this.provider = this.serverless.getProvider(this.serverless.service.provider.name);
     this.stage = this.options.stage || this.serverless.service.provider.stage;
-    this.region = this.options.region || this.serverless.service.provider.region;
 
     this.hooks = {
       'after:deploy:deploy': this.afterDeploy.bind(this)
     };
   }
 
-  putSwagger(apiId, swagger) {
-      return this.provider.request('APIGateway', 'putRestApi', {restApiId: apiId, mode: 'merge', body: swagger}, this.stage, this.region);
-  }
-
-  createDeployment(apiId) {
-      return this.provider.request('APIGateway', 'createDeployment', {restApiId: apiId, stageName: this.stage}, this.stage, this.region);
-  }
-
   getApiId() {
     return new Promise(resolve => {
-      this.provider.request('CloudFormation', 'describeStacks', {StackName: this.provider.naming.getStackName(this.stage)}, this.stage, this.region).then(resp => {
+      this.provider.request('CloudFormation', 'describeStacks', {StackName: this.provider.naming.getStackName(this.stage)}).then(resp => {
         const output = resp.Stacks[0].Outputs;
         let apiUrl;
         output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
@@ -30,6 +21,14 @@ class BinarySupport {
         resolve(apiId);
       });
     });
+  }
+
+  putSwagger(apiId, swagger) {
+      return this.provider.request('APIGateway', 'putRestApi', {restApiId: apiId, mode: 'merge', body: swagger});
+  }
+
+  createDeployment(apiId) {
+      return this.provider.request('APIGateway', 'createDeployment', {restApiId: apiId, stageName: this.stage});
   }
 
   getApiGatewayName(){
