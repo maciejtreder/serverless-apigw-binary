@@ -1,3 +1,5 @@
+'use strict';
+
 class BinarySupport {
   constructor(serverless, options) {
     this.options = options || {};
