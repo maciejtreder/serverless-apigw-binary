@@ -6,16 +6,14 @@ class BinarySupport {
     this.serverless = serverless;
     this.mimeTypes = this.serverless.service.custom.apigwBinary.types;
     this.provider = this.serverless.getProvider(this.serverless.service.provider.name);
-    this.stage = this.options.stage || this.serverless.service.provider.stage;
-
     this.hooks = {
       'after:deploy:deploy': this.afterDeploy.bind(this)
     };
   }
 
-  getApiId() {
+  getApiId(stage) {
     return new Promise(resolve => {
-      this.provider.request('CloudFormation', 'describeStacks', {StackName: this.provider.naming.getStackName(this.stage)}).then(resp => {
+      this.provider.request('CloudFormation', 'describeStacks', { StackName: this.provider.naming.getStackName(stage) }).then(resp => {
         const output = resp.Stacks[0].Outputs;
         let apiUrl;
         output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
@@ -26,21 +24,21 @@ class BinarySupport {
   }
 
   putSwagger(apiId, swagger) {
-      return this.provider.request('APIGateway', 'putRestApi', {restApiId: apiId, mode: 'merge', body: swagger});
+    return this.provider.request('APIGateway', 'putRestApi', { restApiId: apiId, mode: 'merge', body: swagger });
   }
 
-  createDeployment(apiId) {
-      return this.provider.request('APIGateway', 'createDeployment', {restApiId: apiId, stageName: this.stage});
+  createDeployment(apiId, stage) {
+    return this.provider.request('APIGateway', 'createDeployment', { restApiId: apiId, stageName: stage });
   }
 
-  getApiGatewayName(){
-    if(this.serverless.service.resources && this.serverless.service.resources.Resources){
-      const Resources =  this.serverless.service.resources.Resources;
-      for(let key in Resources){
-        if(Resources.hasOwnProperty(key)){
-          if(Resources[key].Type==='AWS::ApiGateway::RestApi'
-              && Resources[key].Properties.Name){
-            return  Resources[key].Properties.Name;
+  getApiGatewayName() {
+    if (this.serverless.service.resources && this.serverless.service.resources.Resources) {
+      const Resources = this.serverless.service.resources.Resources;
+      for (let key in Resources) {
+        if (Resources.hasOwnProperty(key)) {
+          if (Resources[key].Type === 'AWS::ApiGateway::RestApi'
+            && Resources[key].Properties.Name) {
+            return Resources[key].Properties.Name;
           }
         }
       }
@@ -56,10 +54,11 @@ class BinarySupport {
       },
       "x-amazon-apigateway-binary-media-types": this.mimeTypes
     });
+    const stage = this.options.stage || this.serverless.service.provider.stage;
 
-    return this.getApiId().then(apiId => {
+    return this.getApiId(stage).then(apiId => {
       return this.putSwagger(apiId, swaggerInput).then(() => {
-        return this.createDeployment(apiId);
+        return this.createDeployment(apiId, stage);
       });
     });
   }
