@@ -55,6 +55,13 @@ describe('', () => {
             expect(apiGW.serverless).to.be.instanceof(Serverless);
             expect(apiGW.options).to.be.deep.equal(options);
         });
+
+        it('should initialize plugin without custom options', () => {
+          const noCustom = new Serverless(options);
+          const apiGW = new ApiGWPlugin(noCustom);
+
+          expect(apiGW.options).to.be.deep.equal({});
+        });
     });
 
     describe("initialization of serverless with plugin", () => {
