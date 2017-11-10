@@ -4,7 +4,6 @@ class BinarySupport {
   constructor(serverless, options) {
     this.options = options || {};
     this.serverless = serverless;
-    this.mimeTypes = this.serverless.service.custom.apigwBinary.types;
     this.provider = this.serverless.getProvider(this.serverless.service.provider.name);
     this.hooks = {
       'after:deploy:deploy': this.afterDeploy.bind(this)
@@ -47,12 +46,13 @@ class BinarySupport {
   }
 
   afterDeploy() {
+    const mimeTypes = this.serverless.service.custom.apigwBinary.types;
     const swaggerInput = JSON.stringify({
       "swagger": "2.0",
       "info": {
         "title": this.getApiGatewayName()
       },
-      "x-amazon-apigateway-binary-media-types": this.mimeTypes
+      "x-amazon-apigateway-binary-media-types": mimeTypes
     });
     const stage = this.options.stage || this.serverless.service.provider.stage;
 
