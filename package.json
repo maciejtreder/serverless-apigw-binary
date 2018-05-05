@@ -35,7 +35,7 @@
     "chai-as-promised": "^7.1.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
-    "serverless": "^1.21.1",
+    "serverless": "^1.26.1",
     "sinon": "^3.2.1"
   }
 }
