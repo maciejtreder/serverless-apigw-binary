@@ -15,7 +15,7 @@ class BinarySupport {
       this.provider.request('CloudFormation', 'describeStacks', { StackName: this.provider.naming.getStackName(stage) }).then(resp => {
         const output = resp.Stacks[0].Outputs;
         let apiUrl;
-        output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
+        output.filter(entry => entry.OutputKey === 'ServiceEndpoint').forEach(entry => apiUrl = entry.OutputValue);
         const apiId = apiUrl.match('https:\/\/(.*)\\.execute-api')[1];
         resolve(apiId);
       });
