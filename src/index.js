@@ -12,17 +12,17 @@ class BinarySupport {
 
   getApiId(stage) {
     return new Promise((resolve, reject) => {
-      this.provider.request('CloudFormation', 'describeStacks', { StackName: this.provider.naming.getStackName(stage) }).then(resp => {
-        const output = resp.Stacks[0].Outputs;
-        let apiUrl;
-        output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
-        if (apiUrl) {
-          const apiId = apiUrl.match('https:\/\/(.*)\\.execute-api')[1];
-          resolve(apiId);
-        } else {
-          reject(new Error('Stack has no ServiceEndpoint'));
-        }
-      });
+      this.provider.request('CloudFormation', 'describeStackResource', {
+        LogicalResourceId: 'ApiGatewayRestApi',
+        StackName: this.provider.naming.getStackName(stage)
+      }).then(resp => resolve(resp.StackResourceDetail.PhysicalResourceId))
+        .catch(err => {
+          if (err.message.startsWith('Resource ApiGatewayRestApi does not exist for stack')) {
+            resolve(false);
+          } else {
+            reject(err);
+          }
+        });
     });
   }
 
@@ -61,12 +61,9 @@ class BinarySupport {
     const stage = this.options.stage || this.serverless.service.provider.stage;
 
     return this.getApiId(stage).then(apiId => {
-      return this.putSwagger(apiId, swaggerInput).then(() => {
+      return apiId && this.putSwagger(apiId, swaggerInput).then(() => {
         return this.createDeployment(apiId, stage);
       });
-    }).catch(err => {
-      if (err.message !== 'Stack has no ServiceEndpoint')
-        throw err;
     });
   }
 }
