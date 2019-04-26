@@ -11,13 +11,17 @@ class BinarySupport {
   }
 
   getApiId(stage) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.provider.request('CloudFormation', 'describeStacks', { StackName: this.provider.naming.getStackName(stage) }).then(resp => {
         const output = resp.Stacks[0].Outputs;
         let apiUrl;
         output.filter(entry => entry.OutputKey.match('ServiceEndpoint')).forEach(entry => apiUrl = entry.OutputValue);
-        const apiId = apiUrl.match('https:\/\/(.*)\\.execute-api')[1];
-        resolve(apiId);
+        if (apiUrl) {
+          const apiId = apiUrl.match('https:\/\/(.*)\\.execute-api')[1];
+          resolve(apiId);
+        } else {
+          reject(new Error('Stack has no ServiceEndpoint'));
+        }
       });
     });
   }
@@ -60,6 +64,9 @@ class BinarySupport {
       return this.putSwagger(apiId, swaggerInput).then(() => {
         return this.createDeployment(apiId, stage);
       });
+    }).catch(err => {
+      if (err.message !== 'Stack has no ServiceEndpoint')
+        throw err;
     });
   }
 }
