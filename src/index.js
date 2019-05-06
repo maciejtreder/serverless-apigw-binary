@@ -22,6 +22,14 @@ class BinarySupport {
     });
   }
 
+  getApiGatewayApiKeySource(apiId) {
+    return new Promise(resolve => {
+      this.provider.request('APIGateway', 'getRestApi', { restApiId: apiId }).then(resp => {
+        resolve(resp['apiKeySource']);
+      });
+    });
+  }
+
   putSwagger(apiId, swagger) {
     return this.provider.request('APIGateway', 'putRestApi', { restApiId: apiId, mode: 'merge', body: swagger });
   }
@@ -47,18 +55,22 @@ class BinarySupport {
 
   afterDeploy() {
     const mimeTypes = this.serverless.service.custom.apigwBinary.types;
-    const swaggerInput = JSON.stringify({
-      "swagger": "2.0",
-      "info": {
-        "title": this.getApiGatewayName()
-      },
-      "x-amazon-apigateway-binary-media-types": mimeTypes
-    });
     const stage = this.options.stage || this.serverless.service.provider.stage;
 
     return this.getApiId(stage).then(apiId => {
-      return this.putSwagger(apiId, swaggerInput).then(() => {
-        return this.createDeployment(apiId, stage);
+      return this.getApiGatewayApiKeySource(apiId).then(apiKeySource => {
+        const swaggerInput = JSON.stringify({
+          "swagger": "2.0",
+          "info": {
+            "title": this.getApiGatewayName()
+          },
+          "x-amazon-apigateway-api-key-source": apiKeySource,
+          "x-amazon-apigateway-binary-media-types": mimeTypes
+        });
+
+        return this.putSwagger(apiId, swaggerInput).then(() => {
+          return this.createDeployment(apiId, stage);
+        });
       });
     });
   }
